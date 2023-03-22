@@ -3,20 +3,40 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from .postgres import select 
+from django.views.decorators.csrf import csrf_exempt
+from . import valida_token as vt 
 
 
-@api_view(['GET'])
+@csrf_exempt
+@api_view(['POST'])
 def select_one(request):
     
+    token = request.headers['Authorization']
+    data = request.data
+    email = request.headers['email']
+    status = vt.valida_token_navegacao(email, token, 'nav')
+    status = status.json()
+    
+    if status['FL_STATUS'] == False:
+        resposta = {
+            "msg": "token expirado",
+            "FL_STATUS": False        
+            }
+        return JsonResponse(resposta, status=400, safe=False)
+    
     try:
-        data = JSONParser().parse(request)
-        #coluna = list(data.keys())[0]
-        email = list(data.items())  
-        email = email[0][1]      
-        return JsonResponse(select(email), status=201, safe=False)
+        
+        name = data['name']  
+        email = data['email']      
+        retorno = {
+            "FL_STATUS": True,
+            "data": select(name, email)
+        }
+        return JsonResponse(retorno, status=201, safe=False)
 
     except Exception as ex:
         response = {
+            "FL_STATUS": False,
             "error": str(ex.args[0])
         }
         return JsonResponse(response, status=400)

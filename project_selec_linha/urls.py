@@ -21,5 +21,5 @@ from app_select_linha import views as lcviews
 # Additionally, we include login URLs for the browsable API.
 
 urlpatterns = [
-    path('select_linha/', lcviews.select_one),
+    path('get_one_user/', lcviews.select_one),
 ]
