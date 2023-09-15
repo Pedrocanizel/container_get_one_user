@@ -4,8 +4,8 @@ import json
 
 
 def get_connect():
-    con = psycopg2.connect(host='bd.bitgcp.com', database='bitgcp_tables',
-    user='postgres', password='example')
+    con = psycopg2.connect(host='', database='',
+    user='', password='')
     return con
 
 
@@ -13,7 +13,7 @@ def get_connect():
 def select(name, email):
     conn = get_connect()
     cursor = conn.cursor()
-    query = f"""SELECT * FROM bitgcp.users WHERE search_id = '{name}-{email}';"""
+    query = f"""SELECT * FROM schema.table WHERE search_id = '{name}-{email}';"""
     df = pd.read_sql_query(query, con=conn)
     rows = df.to_json(orient='records')
     rows = json.loads(rows)
